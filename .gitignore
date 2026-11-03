@@ -1,0 +1,12 @@
+# 作業系統與編輯器暫存檔
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# 暫存與快取
+*.log
+__pycache__/
+*.pyc
+.venv/
