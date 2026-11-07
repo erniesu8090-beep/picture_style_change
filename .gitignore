@@ -13,9 +13,8 @@ __pycache__/
 .venv/
 assets/uploads/
 
-# 機密與個人隱私資料（嚴禁打包或外洩，保護 Google 帳號與 Session 安全）
+# 機密與環境設定檔
 data/
-data/flow_profile/
 .env
 .env.*
 !.env.example
