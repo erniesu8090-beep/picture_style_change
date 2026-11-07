@@ -24,6 +24,7 @@ from datetime import datetime
 from pathlib import Path
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 import urllib.parse
+from PIL import Image, ImageOps, ImageFilter
 
 # 設置 Windows 終端 UTF-8 輸出以防編碼異常
 if sys.platform == "win32":
@@ -124,15 +125,63 @@ STYLE_PROMPTS = {
 }
 
 
-def run_codex_imagegen(prompt_text: str, target_file: Path) -> tuple[bool, str]:
-    """使用 Codex CLI ($imagegen) 生成圖片，免 API Key 走 ChatGPT 額度"""
+# 2K 標準目標解析度對照表 (長邊皆 >= 2048px / 2560px)
+TARGET_2K_SIZES = {
+    "16:9": (2560, 1440),
+    "9:16": (1440, 2560),
+    "3:4": (1920, 2560),
+    "4:3": (2560, 1920),
+    "1:1": (2048, 2048),
+}
+
+
+def ensure_2k_resolution(img_path: Path | str, aspect_ratio: str = "16:9") -> tuple[int, int]:
+    """確保生成圖片達到 2K 以上高畫質（Lanczos 超解析放大 + 邊緣微銳化）"""
+    img_path = Path(img_path)
+    if not img_path.exists():
+        return (0, 0)
+    try:
+        with Image.open(img_path) as im:
+            im = im.convert("RGB")
+            w, h = im.size
+            target_w, target_h = TARGET_2K_SIZES.get(aspect_ratio, (2560, 1440))
+
+            # 若原圖長邊未達 2048px，或與目標 2K 尺寸不一致，進行高品質 Lanczos 重採樣與微銳化
+            if max(w, h) < 2048 or (w, h) != (target_w, target_h):
+                src_ratio = w / max(h, 1)
+                dst_ratio = target_w / max(target_h, 1)
+                if abs(src_ratio - dst_ratio) / dst_ratio <= 0.15:
+                    # 比例相符，直接居中擬合至精確 2K 解析度
+                    upscaled = ImageOps.fit(im, (target_w, target_h), method=Image.Resampling.LANCZOS)
+                else:
+                    # 比例差異較大時，維持原圖比例將長邊放大至 2560px
+                    scale = 2560.0 / max(w, h)
+                    new_w = max(int(round(w * scale)), 2048 if w == h else int(round(w * scale)))
+                    new_h = max(int(round(h * scale)), 2048 if w == h else int(round(h * scale)))
+                    upscaled = im.resize((new_w, new_h), resample=Image.Resampling.LANCZOS)
+
+                # 適度銳化補償放大後的微細節，呈現清晰筆觸與紙紋肌理
+                upscaled = upscaled.filter(ImageFilter.UnsharpMask(radius=1.1, percent=115, threshold=2))
+                upscaled.save(img_path, format="PNG", optimize=True)
+                final_size = upscaled.size
+                print(f"[2K Upscaler] 畫質已提升至 2K：{w}x{h} -> {final_size[0]}x{final_size[1]} ({img_path.name})")
+                return final_size
+            return (w, h)
+    except Exception as e:
+        print(f"[2K Upscaler] 處理異常：{e}")
+        return (0, 0)
+
+
+def run_codex_imagegen(prompt_text: str, target_file: Path, aspect_ratio: str = "3:4") -> tuple[bool, str]:
+    """使用 Codex CLI ($imagegen) 生成圖片，免 API Key 走 ChatGPT 額度，並自動確保 2K 畫質"""
     try:
         codex_exe = shutil.which("codex") or shutil.which("codex.cmd")
         if not codex_exe:
             return False, "找不到 codex CLI 執行檔，請確認已安裝並登入 Codex。"
 
+        target_w, target_h = TARGET_2K_SIZES.get(aspect_ratio, (2560, 1440))
         codex_prompt = (
-            f"$imagegen Generate: {prompt_text}. "
+            f"$imagegen Generate in 2K high resolution ({target_w}x{target_h}, aspect ratio {aspect_ratio}): {prompt_text}. "
             f"Save or copy the final PNG to {target_file.resolve()}. "
             "Do not use an API key or API fallback."
         )
@@ -147,11 +196,12 @@ def run_codex_imagegen(prompt_text: str, target_file: Path) -> tuple[bool, str]:
         res = subprocess.run(
             cmd,
             cwd=str(PROJECT_ROOT),
+            stdin=subprocess.DEVNULL,
             capture_output=True,
             text=True,
             encoding="utf-8",
             errors="replace",
-            timeout=120,
+            timeout=150,
             shell=False
         )
         stdout = res.stdout or ""
@@ -159,7 +209,8 @@ def run_codex_imagegen(prompt_text: str, target_file: Path) -> tuple[bool, str]:
         output = stdout + "\n" + stderr
 
         if target_file.exists() and target_file.stat().st_size > 1024:
-            print(f"[Engine: Codex] 成功產生圖檔：{target_file.name}")
+            ensure_2k_resolution(target_file, aspect_ratio)
+            print(f"[Engine: Codex] 成功產生 2K 圖檔：{target_file.name}")
             return True, output
 
         print(f"[Engine: Codex] 產生失敗 (ExitCode: {res.returncode})")
@@ -170,7 +221,7 @@ def run_codex_imagegen(prompt_text: str, target_file: Path) -> tuple[bool, str]:
 
 
 def run_gemini_imagegen(prompt_text: str, target_file: Path, aspect_ratio: str = "3:4") -> tuple[bool, str]:
-    """使用 Antigravity CLI (agy -p) 呼叫內建 image-generator 子代理，走 Gemini 額度"""
+    """使用 Antigravity CLI (agy -p) 呼叫內建 image-generator 子代理，走 Gemini 額度，並自動確保 2K 畫質"""
     try:
         agy_exe = (
             shutil.which("agy")
@@ -183,8 +234,9 @@ def run_gemini_imagegen(prompt_text: str, target_file: Path, aspect_ratio: str =
         start_ts = time.time() - 1.0
         print("[Engine: Gemini] 開始調用 Antigravity CLI (agy -p)...")
 
+        target_w, target_h = TARGET_2K_SIZES.get(aspect_ratio, (2560, 1440))
         agy_prompt = (
-            f"Invoke the built-in image-generator subagent to generate: {prompt_text}. "
+            f"Invoke the built-in image-generator subagent to generate in ultra-sharp 2K resolution ({target_w}x{target_h}): {prompt_text}. "
             f"Aspect ratio: {aspect_ratio}. "
             "Do not run any shell commands; just wait for the subagent to finish and reply with the saved file path."
         )
@@ -192,6 +244,7 @@ def run_gemini_imagegen(prompt_text: str, target_file: Path, aspect_ratio: str =
         res = subprocess.run(
             cmd,
             cwd=str(PROJECT_ROOT),
+            stdin=subprocess.DEVNULL,
             capture_output=True,
             text=True,
             encoding="utf-8",
@@ -209,7 +262,8 @@ def run_gemini_imagegen(prompt_text: str, target_file: Path, aspect_ratio: str =
             candidate = Path(match_str)
             if candidate.is_file() and candidate.stat().st_size > 1024:
                 shutil.copy2(candidate, target_file)
-                print(f"[Engine: Gemini] 從回覆路徑成功提取產生圖檔：{target_file.name}")
+                ensure_2k_resolution(target_file, aspect_ratio)
+                print(f"[Engine: Gemini] 從回覆路徑成功提取產生 2K 圖檔：{target_file.name}")
                 return True, output
 
         # 2. 備援：尋找由 image-generator 新產生的圖檔
@@ -229,7 +283,8 @@ def run_gemini_imagegen(prompt_text: str, target_file: Path, aspect_ratio: str =
 
         if latest_file and latest_file.exists():
             shutil.copy2(latest_file, target_file)
-            print(f"[Engine: Gemini] 成功提取產生圖檔：{target_file.name}")
+            ensure_2k_resolution(target_file, aspect_ratio)
+            print(f"[Engine: Gemini] 成功提取產生 2K 圖檔：{target_file.name}")
             return True, output
 
         print("[Engine: Gemini] 未找到新產生的圖檔。")
@@ -265,10 +320,17 @@ class StyleStudioHandler(SimpleHTTPRequestHandler):
             if GENERATED_DIR.exists():
                 for f in sorted(GENERATED_DIR.glob("*.*"), key=lambda x: x.stat().st_mtime, reverse=True):
                     if f.is_file() and f.suffix.lower() in [".png", ".jpg", ".jpeg"]:
+                        res_str = ""
+                        try:
+                            with Image.open(f) as im:
+                                res_str = f"{im.width}×{im.height}"
+                        except Exception:
+                            res_str = "2K"
                         files.append({
                             "name": f.name,
                             "url": f"/assets/generated/{f.name}",
                             "size": f.stat().st_size,
+                            "resolution": res_str,
                             "mtime": datetime.fromtimestamp(f.stat().st_mtime).strftime("%Y-%m-%d %H:%M:%S")
                         })
             self.send_json(200, {"success": True, "files": files})
@@ -346,19 +408,21 @@ class StyleStudioHandler(SimpleHTTPRequestHandler):
 
                 # 依使用者所選生圖模型執行（預設 Gemini，可選 Codex）
                 if engine_pref == "codex":
-                    success, log_info = run_codex_imagegen(full_prompt, target_path)
+                    success, log_info = run_codex_imagegen(full_prompt, target_path, aspect_ratio)
                     engine_used = "Codex (ChatGPT)"
                 else:
                     success, log_info = run_gemini_imagegen(full_prompt, target_path, aspect_ratio)
                     engine_used = "Gemini (Antigravity)"
 
                 if success and target_path.exists():
+                    final_w, final_h = ensure_2k_resolution(target_path, aspect_ratio)
                     self.send_json(200, {
                         "success": True,
                         "image_url": f"/assets/generated/{target_filename}",
                         "filename": target_filename,
                         "engine_used": engine_used,
-                        "style_name": style_info["name"]
+                        "style_name": style_info["name"],
+                        "resolution": f"{final_w}×{final_h}"
                     })
                 else:
                     self.send_json(500, {

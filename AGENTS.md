@@ -15,8 +15,12 @@
 ## 圖像生成原則與網頁工作台
 
 - 本地網頁工作台（雙擊 `啟動風格改圖器.bat` 啟動 `src/server.py`）：
-  - 提供 `GEMINI`（預設，走 Antigravity 內建 `image-generator` 額度）與 `CODEX`（走 ChatGPT `$imagegen` 額度）兩個模型選項供使用者切換。
+  - 提供 `GEMINI`（預設，走 Antigravity 內建 `image-generator` 額度）與 `CODEX`（走 ChatGPT `$imagegen` 額度）雙模型選項供使用者切換。
   - 上傳之參考圖片暫存於 `assets/uploads/`，自動生成之成果歸檔於 `assets/generated/`。
+
+## 多人共用與路徑規範
+
+- **無依賴相對路徑**：全專案禁止寫死任何個人家目錄或硬碟代號，統一以 `PROJECT_ROOT` 推算路徑。
 - 對話模式生成：
   - 不自行捏造圖片中的文字、人物身份、品牌標誌、地標或物件細節。
   - 使用風格提示詞時，保留提示詞中要求的主體保留規則；把使用者選定的比例套用到提示詞。
@@ -28,4 +32,10 @@
 - 修改程式碼後驗證方式：
   - 執行 `python -m py_compile src/server.py` 確認後端語法無誤。
   - 檢查 `風格型錄.html` 所有 `getElementById` 與 DOM `id` 完整對應，且 6 個分類 Tab 皆有對應風格卡片。
+  - 確認 `assets/samples/` 內 15 張範例圖與 `assets/generated/` 內生成圖片長邊皆 `>= 2048px`（2K 標準）。
   - 確認 `啟動風格改圖器.bat` 為 CRLF 換行且純 ASCII。
+
+## 已知的坑
+
+- 原生模型解析度限制與 2K 補償：Gemini 與 Codex 生成之原始影像長邊多在 1000px～1536px 之間，須統一經由 `src/server.py` 的 `ensure_2k_resolution()` 進行高品質 Lanczos 重採樣與 UnsharpMask 邊緣微銳化，確保成果長邊達 2048px / 2560px（2K 標準）。
+- 頻率限制與雙引擎互補：Gemini 內建生圖密集生成約 12 張會觸發配額上限（`429 RESOURCE_EXHAUSTED`，需等待約 4～5 小時）；此時可無縫切換至 Codex（連動 ChatGPT 登入額度）接續出圖。

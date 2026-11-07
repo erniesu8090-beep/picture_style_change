@@ -58,13 +58,15 @@ flowchart LR
 picture_style_change/
 ├── assets/                  # 成果與素材資產
 │   ├── generated/           # 自動生成之成果圖檔
+│   ├── samples/             # 15 款風格 2K 高畫質實測案例
 │   ├── uploads/             # 本機上傳之參考照片
 │   ├── reference_*.jpg      # 基準示範照片（台北101、湖光山色旅拍）
 │   └── kaohsiung_papercut_16x9.png
 ├── src/
-│   └── server.py            # 本地輕量雙引擎橋接服務器（Zero-dependency Python）
+│   └── server.py            # 本地輕量雙引擎橋接服務器 (Gemini / Codex)
 ├── 啟動風格改圖器.bat        # 雙擊一鍵啟動本地 Web 工作台
-├── 風格型錄.html            # 現代互動風格型錄與工作台（支援深淺色、上傳與一鍵生圖）
+├── requirements.txt         # 專案 Python 依賴 (Pillow)
+├── 風格型錄.html            # 現代互動風格型錄與工作台（支援雙引擎切換、上傳與一鍵生圖）
 ├── AGENTS.md                # AI 代理作業規範
 ├── README.md                # 專案介紹與操作手冊（本檔）
 ├── 風格改圖整理.md          # 15 種風格清單與標準提示詞庫

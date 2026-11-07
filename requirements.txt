@@ -1,0 +1,2 @@
+# 照片風格改圖器 (Photo Style Studio) 依賴清單
+pillow>=10.0.0
