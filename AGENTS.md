@@ -1,6 +1,6 @@
 # 作圖風格專案規則
 
-目標執行環境：個人開發機（支援本地網頁工作台 `風格型錄.html` 搭配 `src/server.py` 雙引擎 AI 生圖，以及 ChatGPT / AI 對話中的圖像生成工具）。
+目標執行環境：個人開發機（支援本地網頁工作台 `風格型錄.html` 搭配 `src/server.py` 三引擎 AI 生圖：Gemini 官方額度、Codex ChatGPT 額度、Gemini Web 網頁版 Cookie 額度，以及 AI 對話中的圖像生成工具）。
 
 ## 固定作業流程
 
@@ -15,7 +15,10 @@
 ## 圖像生成原則與網頁工作台
 
 - 本地網頁工作台（雙擊 `啟動風格改圖器.bat` 啟動 `src/server.py`）：
-  - 提供 `GEMINI`（預設，走 Antigravity 內建 `image-generator` 額度）與 `CODEX`（走 ChatGPT `$imagegen` 額度）雙模型選項供使用者切換。
+  - 提供三引擎選項自由切換：
+    1. `GEMINI`（預設，走 Antigravity 內建 `image-generator` 額度）
+    2. `CODEX`（走 ChatGPT `$imagegen` 額度）
+    3. `GEMINI WEB`（走個人 `gemini.google.com` 網頁版 Cookie 額度，零 API 費用）
   - 上傳之參考圖片暫存於 `assets/uploads/`，自動生成之成果歸檔於 `assets/generated/`。
 
 ## 多人共用與路徑規範
@@ -38,4 +41,6 @@
 ## 已知的坑
 
 - 原生模型解析度限制與 2K 補償：Gemini 與 Codex 生成之原始影像長邊多在 1000px～1536px 之間，須統一經由 `src/server.py` 的 `ensure_2k_resolution()` 進行高品質 Lanczos 重採樣與 UnsharpMask 邊緣微銳化，確保成果長邊達 2048px / 2560px（2K 標準）。
-- 頻率限制與雙引擎互補：Gemini 內建生圖密集生成約 12 張會觸發配額上限（`429 RESOURCE_EXHAUSTED`，需等待約 4～5 小時）；此時可無縫切換至 Codex（連動 ChatGPT 登入額度）接續出圖。
+- 頻率限制與三引擎互補：Gemini 內建生圖密集生成約 12 張會觸發配額上限（`429 RESOURCE_EXHAUSTED`，需等待約 4～5 小時）；此時可無縫切換至 Codex（連動 ChatGPT 登入額度）或切換至 Gemini Web 引擎（直接消耗 gemini.google.com 網頁端額度）接續出圖。
+- Gemini Web Cookie 管理：Chrome 127+ 具備 App-Bound Encryption，可透過 `設定Web_Cookie.bat`（或 `src/image_generator/cookie_fetcher.py`）以 Chromium CDP 從已登入設定檔自動提取 `__Secure-1PSID` 與 `__Secure-1PSIDTS` 存入 `cookies.json`（嚴禁提交至 Git）；通訊期間後端自動刷新並持久化。
+- `gemini-webapi` 2.x 版 API 差異：`GeminiClient.generate_content()` 附帶參考圖時參數名為 `files=[...]`（舊版 `images=[...]` 已棄用）；`GeneratedImage.save(path, filename)` 已移除舊版 `skip_invalid_filename` 參數（預設 `full_size=True` 並回傳實際存檔路徑字串）。

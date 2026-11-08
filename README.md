@@ -47,8 +47,8 @@ flowchart LR
 2. **選定長寬比例**：確認使用者偏好畫幅為橫版 `16:9`、直版 `9:16`、海報 `3:4` 或正方 `1:1`。
 3. **執行生成**：
    - **方式一（對話框 / ChatGPT）**：在網頁或對話中複製 Prompt 貼上發送。
-   - **方式二（網頁工作台一鍵直出）**：雙擊根目錄 `啟動風格改圖器.bat`，在瀏覽器上傳照片、選風格與畫幅比例，並可自由選擇生圖模型（預設為 **GEMINI**，亦可切換為 **CODEX**），點擊「立即生成」即可自動算圖出圖，完全免 API Key！
-4. **成果歸檔**：生成完成後圖片自動歸檔於 `assets/generated/`，並可在網頁歷史藝廊即時預覽與下載。
+   - **方式二（網頁工作台一鍵直出）**：雙擊根目錄 `啟動風格改圖器.bat`，在瀏覽器上傳照片、選風格與畫幅比例，並可自由選擇三種生圖引擎（預設為 **🔵 GEMINI** 官方額度、**🟢 CODEX** ChatGPT 額度，或 **🟣 GEMINI WEB** 個人網頁版 Cookie 額度），點擊「立即生成」即可自動算圖出圖，完全免 API Key！
+4. **成果歸檔**：生成完成後圖片自動經由 Lanczos 與微銳化完成 2K 畫質提升，歸檔於 `assets/generated/`，並可在網頁歷史藝廊即時預覽與下載。
 
 ---
 
@@ -57,16 +57,20 @@ flowchart LR
 ```text
 picture_style_change/
 ├── assets/                  # 成果與素材資產
-│   ├── generated/           # 自動生成之成果圖檔
+│   ├── generated/           # 自動生成之成果圖檔 (2K HD)
 │   ├── samples/             # 15 款風格 2K 高畫質實測案例
 │   ├── uploads/             # 本機上傳之參考照片
 │   ├── reference_*.jpg      # 基準示範照片（台北101、湖光山色旅拍）
 │   └── kaohsiung_papercut_16x9.png
 ├── src/
-│   └── server.py            # 本地輕量雙引擎橋接服務器 (Gemini / Codex)
-├── 啟動風格改圖器.bat        # 雙擊一鍵啟動本地 Web 工作台
-├── requirements.txt         # 專案 Python 依賴 (Pillow)
-├── 風格型錄.html            # 現代互動風格型錄與工作台（支援雙引擎切換、上傳與一鍵生圖）
+│   ├── image_generator/     # 第三引擎：Gemini 網頁版 Web API 逆向封裝模組
+│   │   ├── config.py        # Cookie 載入與自動回寫持久化
+│   │   └── webapi_engine.py # 基於 gemini-webapi 的非同步生圖實作
+│   └── server.py            # 本地輕量三引擎橋接服務器 (Gemini / Codex / Gemini Web)
+├── 啟動風格改圖器.bat        # 雙擊一鍵啟動本地 Web 工作台 (自動掛載 .venv)
+├── cookies.json.example     # Gemini Web 版 Cookie 設定範本指南
+├── requirements.txt         # 專案 Python 依賴 (Pillow, gemini-webapi, pydantic, dotenv)
+├── 風格型錄.html            # 現代互動風格型錄與工作台（支援三引擎切換、上傳與一鍵生圖）
 ├── AGENTS.md                # AI 代理作業規範
 ├── README.md                # 專案介紹與操作手冊（本檔）
 ├── 風格改圖整理.md          # 15 種風格清單與標準提示詞庫
