@@ -1,6 +1,6 @@
 # 作圖風格專案規則
 
-目標執行環境：ChatGPT 對話中的圖像生成工具。使用者提供圖片後，由 ChatGPT 依本規則引導選風格、選比例並生成圖片。
+目標執行環境：個人開發機（支援本地網頁工作台 `風格型錄.html` 搭配 `src/server.py` 三引擎 AI 生圖：Gemini 官方額度、Codex ChatGPT 額度、Gemini Web 網頁版 Cookie 額度，以及 AI 對話中的圖像生成工具）。
 
 ## 固定作業流程
 
@@ -8,29 +8,39 @@
 
 1. 閱讀 `風格改圖整理.md`，查看圖片主體、構圖和可辨識特徵。
 2. 從風格目錄挑出適合該圖片的選項，列成編號清單。每個選項用一句白話描述效果；至少納入一個特殊風格。若適合的選項超過 10 項，先列最適合的 6 至 10 項，並提供「查看完整風格清單」選項。
-3. 等使用者選定一種風格後，再詢問長寬比例：`16:9` 或 `9:16`。如果使用者已同時指定風格和比例，就不重複詢問。
+3. 等使用者選定一種風格後，再詢問長寬比例：`16:9`、`9:16`、`3:4` 或 `1:1`。如果使用者已同時指定風格和比例，就不重複詢問。
 4. 取得風格與比例後，以原始圖片為參考生成圖片；保留主體身份、主要內容與重要細節，只依所選風格改變畫法、材質、構圖延伸或色彩。
 5. 若所選風格不適合圖片主體，先簡短說明原因並列出可行風格，讓使用者決定；不要擅自改成另一種風格。
 
-## 圖像生成原則
+## 圖像生成原則與網頁工作台
 
-- 透過 ChatGPT 圖像生成工具處理使用者提供的圖片。
-- 不自行捏造圖片中的文字、人物身份、品牌標誌、地標或物件細節。
-- 使用風格提示詞時，保留提示詞中要求的主體保留規則；把使用者選定的比例套用到提示詞。
-- 使用者明確指定其他風格、比例或構圖時，以該次指示為準。
-- 不在使用者尚未選定風格或比例前開始生成，除非使用者已一次提供完整選擇。
-- 產出解析度規範：成品必須達到至少 2K / FHD 畫質（16:9 為 `1920 × 1080` 以上；9:16 為 `1080 × 1920` 以上）。若生圖引擎原生解析度未達標，生成後須自動呼叫 `src/upscale.py` 進行高品質（Lanczos）升頻後再歸檔。
-- 每次生成完成後，以本 `AGENTS.md` 所在目錄作為專案根目錄，將最終圖片複製到相對路徑 `assets/`。不要依賴磁碟代號、使用者家目錄或其他電腦專屬的絕對路徑。檔名使用簡短英文與底線，避免覆寫既有圖片；將存檔路徑一併提供給使用者。
+- 本地網頁工作台（雙擊 `啟動風格改圖器.bat` 啟動 `src/server.py`）：
+  - 提供三引擎選項自由切換：
+    1. `GEMINI`（預設，走 Antigravity 內建 `image-generator` 額度）
+    2. `CODEX`（走 ChatGPT `$imagegen` 額度）
+    3. `GEMINI WEB`（走個人 `gemini.google.com` 網頁版 Cookie 額度，零 API 費用）
+  - 上傳之參考圖片暫存於 `assets/uploads/`，自動生成之成果歸檔於 `assets/generated/`。
 
-## 修改後的驗證方式
+## 多人共用與路徑規範
 
-每次改動或生成圖片後，執行以下 Python 指令驗證圖片解析度是否達標：
-```bash
-python -c "from PIL import Image; from pathlib import Path; [print(p.name, img.size, '達標' if (img.width>=1920 and img.height>=1080) or (img.width>=1080 and img.height>=1920) else '未達標') for p in Path('assets').glob('*.*') if p.suffix.lower() in ['.jpg','.png'] for img in [Image.open(p)]]"
-```
+- **無依賴相對路徑**：全專案禁止寫死任何個人家目錄或硬碟代號，統一以 `PROJECT_ROOT` 推算路徑。
+- 對話模式生成：
+  - 不自行捏造圖片中的文字、人物身份、品牌標誌、地標或物件細節。
+  - 使用風格提示詞時，保留提示詞中要求的主體保留規則；把使用者選定的比例套用到提示詞。
+  - 每次生成完成後，以本 `AGENTS.md` 所在目錄作為專案根目錄，將最終圖片複製到相對路徑 `assets/`（或 `assets/generated/`）。不要依賴磁碟代號、使用者家目錄或其他電腦專屬的絕對路徑。檔名使用簡短英文與底線，避免覆寫既有圖片；將存檔路徑一併提供給使用者。
 
-## 風格資料
+## 風格資料與驗證方式
 
-- 風格名稱、用途、完整提示詞與參考來源整理在 `風格改圖整理.md`。
-- 每次提供選項時以該檔案為準；新增風格或修改提示詞後，同步更新目錄與來源。
-- 歷史圖片只有在可確認是生成成品時才列為範例；原始照片或參考圖不可標成生成成果。
+- 風格名稱、用途、完整提示詞與參考來源整理在 `風格改圖整理.md` 與 `風格型錄.html`。
+- 修改程式碼後驗證方式：
+  - 執行 `python -m py_compile src/server.py` 確認後端語法無誤。
+  - 檢查 `風格型錄.html` 所有 `getElementById` 與 DOM `id` 完整對應，且 6 個分類 Tab 皆有對應風格卡片。
+  - 確認 `assets/samples/` 內 15 張範例圖與 `assets/generated/` 內生成圖片長邊皆 `>= 2048px`（2K 標準）。
+  - 確認 `啟動風格改圖器.bat` 為 CRLF 換行且純 ASCII。
+
+## 已知的坑
+
+- 原生模型解析度限制與 2K 補償：Gemini 與 Codex 生成之原始影像長邊多在 1000px～1536px 之間，須統一經由 `src/server.py` 的 `ensure_2k_resolution()` 進行高品質 Lanczos 重採樣與 UnsharpMask 邊緣微銳化，確保成果長邊達 2048px / 2560px（2K 標準）。
+- 頻率限制與三引擎互補：Gemini 內建生圖密集生成約 12 張會觸發配額上限（`429 RESOURCE_EXHAUSTED`，需等待約 4～5 小時）；此時可無縫切換至 Codex（連動 ChatGPT 登入額度）或切換至 Gemini Web 引擎（直接消耗 gemini.google.com 網頁端額度）接續出圖。
+- Gemini Web Cookie 管理：Chrome 127+ 具備 App-Bound Encryption，可透過 `設定Web_Cookie.bat`（或 `src/image_generator/cookie_fetcher.py`）以 Chromium CDP 從已登入設定檔自動提取 `__Secure-1PSID` 與 `__Secure-1PSIDTS` 存入 `cookies.json`（嚴禁提交至 Git）；通訊期間後端自動刷新並持久化。
+- `gemini-webapi` 2.x 版 API 差異：`GeminiClient.generate_content()` 附帶參考圖時參數名為 `files=[...]`（舊版 `images=[...]` 已棄用）；`GeneratedImage.save(path, filename)` 已移除舊版 `skip_invalid_filename` 參數（預設 `full_size=True` 並回傳實際存檔路徑字串）。

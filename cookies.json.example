@@ -1,0 +1,11 @@
+{
+  "_comment": "Gemini 網頁版 Cookie 憑證範本。請複製此檔並命名為 cookies.json 填入真實值",
+  "_instructions": [
+    "1. 於瀏覽器登入 https://gemini.google.com/ 並確認帳號能正常發送生圖。",
+    "2. 按鍵盤 F12 開啟開發者工具 -> 點擊 Application (應用程式) -> 展開 Cookies -> 點擊 https://gemini.google.com",
+    "3. 找到 __Secure-1PSID 與 __Secure-1PSIDTS 兩項，將對應的 Value 複製貼上於下方對應欄位。",
+    "4. 存檔為專案根目錄的 cookies.json 即可（此檔已被 .gitignore 忽略，絕不上傳版控）。"
+  ],
+  "__Secure-1PSID": "請在此貼上您的__Secure-1PSID值",
+  "__Secure-1PSIDTS": "請在此貼上您的__Secure-1PSIDTS值"
+}

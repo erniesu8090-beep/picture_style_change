@@ -7,6 +7,18 @@ desktop.ini
 
 # 暫存與快取
 *.log
+logs/
 __pycache__/
 *.pyc
 .venv/
+assets/uploads/
+assets/generated/
+
+# 機密與環境設定檔
+data/
+.env
+.env.*
+!.env.example
+cookies.json
+*.cookie
+!cookies.json.example

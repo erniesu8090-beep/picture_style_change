@@ -1,0 +1,6 @@
+# Photo Style Studio dependencies (Python >= 3.10)
+pillow>=10.0.0
+gemini-webapi>=2.1.1
+curl_cffi>=0.6.0
+python-dotenv>=1.0.0
+pydantic>=2.0.0
