@@ -19,7 +19,15 @@
 - 使用風格提示詞時，保留提示詞中要求的主體保留規則；把使用者選定的比例套用到提示詞。
 - 使用者明確指定其他風格、比例或構圖時，以該次指示為準。
 - 不在使用者尚未選定風格或比例前開始生成，除非使用者已一次提供完整選擇。
+- 產出解析度規範：成品必須達到至少 2K / FHD 畫質（16:9 為 `1920 × 1080` 以上；9:16 為 `1080 × 1920` 以上）。若生圖引擎原生解析度未達標，生成後須自動呼叫 `src/upscale.py` 進行高品質（Lanczos）升頻後再歸檔。
 - 每次生成完成後，以本 `AGENTS.md` 所在目錄作為專案根目錄，將最終圖片複製到相對路徑 `assets/`。不要依賴磁碟代號、使用者家目錄或其他電腦專屬的絕對路徑。檔名使用簡短英文與底線，避免覆寫既有圖片；將存檔路徑一併提供給使用者。
+
+## 修改後的驗證方式
+
+每次改動或生成圖片後，執行以下 Python 指令驗證圖片解析度是否達標：
+```bash
+python -c "from PIL import Image; from pathlib import Path; [print(p.name, img.size, '達標' if (img.width>=1920 and img.height>=1080) or (img.width>=1080 and img.height>=1920) else '未達標') for p in Path('assets').glob('*.*') if p.suffix.lower() in ['.jpg','.png'] for img in [Image.open(p)]]"
+```
 
 ## 風格資料
 
