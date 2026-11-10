@@ -138,6 +138,11 @@ STYLE_PROMPTS = {
         "name": "靜謐棉紙水彩雜誌海報",
         "slug": "editorial_watercolor",
         "prompt": "Transform the uploaded image into a single full-frame minimalist editorial art poster with a quiet, poetic magazine aesthetic. Set on tactile off-white heavy cotton paper with visible fibers and deckle edges. Render the subject as an exquisite, delicate watercolor silhouette in faint warm grey and muted earthy tones with translucent washes. Refined editorial typography with an elegant serif title, wide-tracked uppercase subtitle, and poetic italic text. Minimal, quiet, airy, wabi-sabi magazine aesthetic."
+    },
+    "16": {
+        "name": "包豪斯幾何曲線解構海報",
+        "slug": "bauhaus_curvilinear",
+        "prompt": "Transform the uploaded image into a single, premium full-frame modern abstract geometric art poster inspired by Bauhaus, Swiss experimental graphic design, vintage independent art magazines, and Risograph screenprint aesthetics. Thoroughly deconstruct the subject, contours, posture, and spatial flow into an abstract geometric composition. Strictly forbidden: rectangles, squares, block collages, checkerboards, rectangular grids, or orthogonal right-angle frames. Permitted forms only: circles, semicircles, rings, circular arcs, sectors, ellipses, triangles, wedges, cones, crescents, irregular curved planes, fluid curves, structural nodes, dots, orbital paths, and breathing negative space. The core geometric ensemble is scaled down by approximately 70% (occupying ~30% of normal scale) forming a refined focal center surrounded by vast warm-white paper negative space. Dual-tone Edensor-style slender high-contrast serif title with sparse micro-typography indexing. Rich tactile paper fibers and subtle Risograph print speckling. No split screens or photographic collage."
     }
 }
 

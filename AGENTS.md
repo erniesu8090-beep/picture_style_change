@@ -35,7 +35,7 @@
 - 修改程式碼後驗證方式：
   - 執行 `python -m py_compile src/server.py` 確認後端語法無誤。
   - 檢查 `風格型錄.html` 所有 `getElementById` 與 DOM `id` 完整對應，且 6 個分類 Tab 皆有對應風格卡片。
-  - 確認 `assets/samples/` 內 15 張範例圖與 `assets/generated/` 內生成圖片長邊皆 `>= 2048px`（2K 標準）。
+  - 確認 `assets/samples/` 內 16 張範例圖與 `assets/generated/` 內生成圖片長邊皆 `>= 2048px`（2K 標準）。
   - 確認 `啟動風格改圖器.bat` 為 CRLF 換行且純 ASCII。
 
 ## 已知的坑

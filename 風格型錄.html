@@ -136,7 +136,7 @@
           上傳照片・挑選風格・一鍵直接生成
         </h1>
         <p class="text-xs sm:text-sm text-[var(--text-muted)]">
-          在下方上傳照片或直接選用基準照片，挑選 15 款精緻風格，點擊即可由本地背景自動算圖出圖！
+          在下方上傳照片或直接選用基準照片，挑選 16 款精緻風格，點擊即可由本地背景自動算圖出圖！
         </p>
       </div>
 
@@ -273,7 +273,7 @@
         <!-- 分類 Tab -->
         <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar" id="categoryFilters">
           <button data-cat="all" class="cat-btn active px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-indigo-600 text-white shadow-md shadow-indigo-600/20 transition-all">
-            全部 (15)
+            全部 (16)
           </button>
           <button data-cat="architecture" class="cat-btn px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-indigo-500 transition-all">
             建築與都市
@@ -494,7 +494,7 @@
 
   <!-- 核心資料庫與邏輯腳本 -->
   <script>
-    // 15 種風格完整資料庫 (全數具備 2K 實測案例圖)
+    // 16 種風格完整資料庫
     const STYLES_DATABASE = [
       {
         id: "01",
@@ -690,6 +690,19 @@
         hasSampleImage: true,
         sampleImgUrl: "assets/samples/style_15_editorial_watercolor.png",
         rawPrompt: `Transform the uploaded image into a single, full-frame minimalist editorial art poster with a quiet, poetic magazine aesthetic. The entire artwork is set on tactile, off-white heavy cotton paper with visible organic paper fibers, subtle cold-press watercolor texture, and natural deckle edges. Soft, warm diffused gallery lighting. Faithfully capture the silhouette, posture, proportions, and recognizable essence of the subject from the uploaded photo. Render the subject as an exquisite, delicate watercolor silhouette in faint warm grey and muted earthy tones, featuring translucent washes, subtle pigment blooming, and soft water-edge diffusion. Pure artistic hand-painted feel. Gracefully arranged below or beside the watercolor subject, feature refined editorial typography: an elegant, high-contrast serif title identifying the subject's name, a delicate wide-tracked uppercase subtitle, and two to three lines of poetic fine-italic editorial notes. Minimal, quiet, airy, and wabi-sabi. Generous breathing negative space. Single artwork only. No top-bottom contrast, no split-screen panels, no torn paper collage borders, no photographic comparison, and no watermarks.`
+      },
+      {
+        id: "16",
+        name: "包豪斯幾何曲線解構海報",
+        enName: "Bauhaus Curvilinear Deconstruction",
+        category: "abstract",
+        categoryName: "現代與抽象",
+        effect: "徹底解構原照幾何重心；嚴禁矩形與直角網格，以圓形、圓弧、扇形、三角等幾何有機形態構成約 30% 精緻視覺核心，大面積暖白留白，搭配雙色 Edensor 纖細修長襯線字體與 Risograph 孔版印刷質感。",
+        bestFor: "建築地標、交通工具、幾何器物、人物剪影、現代設計品與雕塑",
+        tags: ["#包豪斯", "#幾何曲線", "#無矩形", "#極致留白", "#Edensor襯線"],
+        hasSampleImage: true,
+        sampleImgUrl: "assets/samples/style_16_bauhaus_curvilinear.png",
+        rawPrompt: `Transform the uploaded image into a single, premium full-frame modern abstract geometric art poster inspired by Bauhaus, Swiss experimental graphic design, vintage independent art magazines, and Risograph screenprint aesthetics. Single artwork only, no split-screen panels, no 50/50 comparison layout, and no photographic collage. Thoroughly deconstruct the subject, contours, posture, and spatial flow into an abstract geometric composition. Strictly forbidden: rectangles, squares, block collages, checkerboards, rectangular grids, or orthogonal right-angle frames. Permitted forms only: circles, semicircles, rings, circular arcs, sectors, ellipses, triangles, wedges, cones, crescents, irregular curved planes, fluid curves, structural nodes, dots, orbital paths, and breathing negative space. The core geometric ensemble is scaled down by approximately 70% (occupying ~30% of normal canvas scale) forming an exquisitely concentrated focal center surrounded by vast warm-white paper negative space. Dual-tone Edensor-style slender high-contrast serif title with sparse micro-typography indexing. Rich tactile paper fibers and subtle Risograph print speckling.`
       }
     ];
 
