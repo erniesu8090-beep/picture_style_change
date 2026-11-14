@@ -62,7 +62,7 @@ except Exception as e:
     HAS_GEMINI_WEB = False
     print(f"[Notice] 第三引擎 (Gemini Web) 模組未啟用：{e}")
 
-# 15 款風格提示詞字典 (包含英文核心 Prompt)
+# 17 款風格提示詞字典 (包含英文核心 Prompt)
 STYLE_PROMPTS = {
     "01": {
         "name": "層疊紙雕、手工剪紙",
@@ -143,6 +143,11 @@ STYLE_PROMPTS = {
         "name": "包豪斯幾何曲線解構海報",
         "slug": "bauhaus_curvilinear",
         "prompt": "Transform the uploaded image into a single, premium full-frame modern abstract geometric art poster inspired by Bauhaus, Swiss experimental graphic design, vintage independent art magazines, and Risograph screenprint aesthetics. Thoroughly deconstruct the subject, contours, posture, and spatial flow into an abstract geometric composition. Strictly forbidden: rectangles, squares, block collages, checkerboards, rectangular grids, or orthogonal right-angle frames. Permitted forms only: circles, semicircles, rings, circular arcs, sectors, ellipses, triangles, wedges, cones, crescents, irregular curved planes, fluid curves, structural nodes, dots, orbital paths, and breathing negative space. The core geometric ensemble is scaled down by approximately 70% (occupying ~30% of normal scale) forming a refined focal center surrounded by vast warm-white paper negative space. Dual-tone Edensor-style slender high-contrast serif title with sparse micro-typography indexing. Rich tactile paper fibers and subtle Risograph print speckling. No split screens or photographic collage."
+    },
+    "17": {
+        "name": "日系地形等高線敘事漫畫",
+        "slug": "topographic_manga",
+        "prompt": "Redraw the uploaded photograph into a single, full-frame 2D narrative comic illustration blending Japanese topographic contour-line art with modern linear illustration. Single standalone artwork only, no split-screen, no 50/50 photo comparison, no borders. Accurately preserve subject identity, facial features, proportions, posture, clothing folds, objects, and spatial relationships using crisp, complete pen-and-ink linework; never turn faces or bodies into abstract contour lines. Extract contours of architecture, ground, and natural environment into flowing topographic contour curves extending around the subject with cartographic order, varying line density, selective flat color planes, and fine hatching. Controlled color palette of deep ocean blue, sandstone beige, muted sage grey-green, and terracotta orange-red on clean fine-art paper with precise printed ink lines, avoiding rough grain or watercolor bleeding. Core visual content occupies about 2/3 of the canvas with balanced surrounding negative space, tiny cartographic markers, coordinate symbols, auxiliary hairlines, and a single small English title in a cute, rounded, refined independent art zine typeface."
     }
 }
 
@@ -211,7 +216,11 @@ def run_codex_imagegen(prompt_text: str, target_file: Path, aspect_ratio: str = 
         cmd = [
             codex_exe,
             "exec",
-            "--dangerously-skip-permissions",
+            "--skip-git-repo-check",
+            "--sandbox",
+            "workspace-write",
+            "--cd",
+            str(PROJECT_ROOT),
             codex_prompt,
         ]
 

@@ -136,7 +136,7 @@
           上傳照片・挑選風格・一鍵直接生成
         </h1>
         <p class="text-xs sm:text-sm text-[var(--text-muted)]">
-          在下方上傳照片或直接選用基準照片，挑選 16 款精緻風格，點擊即可由本地背景自動算圖出圖！
+          在下方上傳照片或直接選用基準照片，挑選 17 款精緻風格，點擊即可由本地背景自動算圖出圖！
         </p>
       </div>
 
@@ -273,7 +273,7 @@
         <!-- 分類 Tab -->
         <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar" id="categoryFilters">
           <button data-cat="all" class="cat-btn active px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-indigo-600 text-white shadow-md shadow-indigo-600/20 transition-all">
-            全部 (16)
+            全部 (17)
           </button>
           <button data-cat="architecture" class="cat-btn px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-indigo-500 transition-all">
             建築與都市
@@ -703,6 +703,19 @@
         hasSampleImage: true,
         sampleImgUrl: "assets/samples/style_16_bauhaus_curvilinear.png",
         rawPrompt: `Transform the uploaded image into a single, premium full-frame modern abstract geometric art poster inspired by Bauhaus, Swiss experimental graphic design, vintage independent art magazines, and Risograph screenprint aesthetics. Single artwork only, no split-screen panels, no 50/50 comparison layout, and no photographic collage. Thoroughly deconstruct the subject, contours, posture, and spatial flow into an abstract geometric composition. Strictly forbidden: rectangles, squares, block collages, checkerboards, rectangular grids, or orthogonal right-angle frames. Permitted forms only: circles, semicircles, rings, circular arcs, sectors, ellipses, triangles, wedges, cones, crescents, irregular curved planes, fluid curves, structural nodes, dots, orbital paths, and breathing negative space. The core geometric ensemble is scaled down by approximately 70% (occupying ~30% of normal canvas scale) forming an exquisitely concentrated focal center surrounded by vast warm-white paper negative space. Dual-tone Edensor-style slender high-contrast serif title with sparse micro-typography indexing. Rich tactile paper fibers and subtle Risograph print speckling.`
+      },
+      {
+        id: "17",
+        name: "日系地形等高線敘事漫畫",
+        enName: "Topographic Contour Manga",
+        category: "handdrawn",
+        categoryName: "手繪與動畫",
+        effect: "日系地形等高線與現代線性插畫結合的 2D 敘事漫畫；人物採清晰完整鋼筆線描，背景融入等高線式流動曲線與極小座標符號，搭配深海藍、沙岩米、灰綠、橘紅主色、四周留白與圓潤英文小標題。",
+        bestFor: "人物旅拍、戶外風景、城市街景、建築地標、日常敘事照片",
+        tags: ["#地形等高線", "#日系敘事漫畫", "#鋼筆線描", "#獨立刊物風", "#地圖座標"],
+        hasSampleImage: true,
+        sampleImgUrl: "assets/samples/style_17_topographic_manga.png",
+        rawPrompt: `Redraw the uploaded photograph into a single, full-frame 2D narrative comic illustration that blends Japanese topographic contour-line art with modern linear illustration. Single standalone artwork only—no split-screen, no 50/50 photo comparison, no collages, and no borders. Accurately preserve the subject's identity, facial features, proportions, posture, gestures, clothing folds, objects, and original spatial relationships. Render people and primary subjects using crisp, complete, well-defined pen-and-ink linework. Strictly do NOT turn faces, skin, or bodies into abstract contour lines; facial structure, hands, and attire must remain clear, natural, and accurate. Based on the authentic structure of the photograph, extract the contours of architecture, terrain, ground, water, and natural surroundings, weaving flowing topographic contour curves seamlessly into the background and environment. The contour lines extend organically around the subject with cartographic order and artistic rhythm. Use varying line density, continuous flowing curves, selective flat color planes, and fine hatching to express spatial depth and light-shadow transitions. Use a controlled palette anchored by deep ocean blue, sandstone beige, muted sage/grey-green, and terracotta orange-red on clean fine-art paper with precise printed ink line quality—avoid rough grain, muddy washes, or watercolor bleeding. The core visual illustration occupies approximately 2/3 of the canvas, surrounded by balanced negative space on all four sides. Sparsely incorporate tiny cartographic markers, coordinate symbols, and delicate auxiliary hairlines (no unrelated text). Include a single small English title in a cute, rounded, refined typeface with a modern independent art publication aesthetic.`
       }
     ];
 

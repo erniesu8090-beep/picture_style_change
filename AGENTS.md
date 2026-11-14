@@ -35,7 +35,7 @@
 - 修改程式碼後驗證方式：
   - 執行 `python -m py_compile src/server.py` 確認後端語法無誤。
   - 檢查 `風格型錄.html` 所有 `getElementById` 與 DOM `id` 完整對應，且 6 個分類 Tab 皆有對應風格卡片。
-  - 確認 `assets/samples/` 內 16 張範例圖與 `assets/generated/` 內生成圖片長邊皆 `>= 2048px`（2K 標準）。
+  - 確認 `assets/samples/` 內 17 張範例圖與 `assets/generated/` 內生成圖片長邊皆 `>= 2048px`（2K 標準）。
   - 確認 `啟動風格改圖器.bat` 為 CRLF 換行且純 ASCII。
 
 ## 已知的坑
@@ -44,3 +44,4 @@
 - 頻率限制與三引擎互補：Gemini 內建生圖密集生成約 12 張會觸發配額上限（`429 RESOURCE_EXHAUSTED`，需等待約 4～5 小時）；此時可無縫切換至 Codex（連動 ChatGPT 登入額度）或切換至 Gemini Web 引擎（直接消耗 gemini.google.com 網頁端額度）接續出圖。
 - Gemini Web Cookie 管理：Chrome 127+ 具備 App-Bound Encryption，可透過 `設定Web_Cookie.bat`（或 `src/image_generator/cookie_fetcher.py`）以 Chromium CDP 從已登入設定檔自動提取 `__Secure-1PSID` 與 `__Secure-1PSIDTS` 存入 `cookies.json`（嚴禁提交至 Git）；通訊期間後端自動刷新並持久化。
 - `gemini-webapi` 2.x 版 API 差異：`GeminiClient.generate_content()` 附帶參考圖時參數名為 `files=[...]`（舊版 `images=[...]` 已棄用）；`GeneratedImage.save(path, filename)` 已移除舊版 `skip_invalid_filename` 參數（預設 `full_size=True` 並回傳實際存檔路徑字串）。
+- Codex CLI 非互動呼叫防卡死與參數規範：在 Windows / PowerShell 或子進程呼叫 `codex exec` 時必須關閉標準輸入（如 `stdin=subprocess.DEVNULL` 或導向空輸入），否則會停在 `Reading additional input from stdin...` 無限期卡住；且新版 `codex exec` 已移除 `--dangerously-skip-permissions`，須改用 `--skip-git-repo-check --sandbox workspace-write`。
